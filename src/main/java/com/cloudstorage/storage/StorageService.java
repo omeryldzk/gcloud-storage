@@ -1,9 +1,6 @@
 package com.cloudstorage.storage;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +15,10 @@ public class StorageService {
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
+    @Value("${spring.cloud.gcp.storage.bucket.rest}")
+    private String bucketNameRest;
+
+
     @Value("${spring.cloud.gcp.storage.bucket.emailList}")
     private String emailBucketName;
 
@@ -27,13 +28,14 @@ public class StorageService {
         this.storage = StorageOptions.getDefaultInstance().getService();
     }
 
-    public String uploadFile(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+    public String uploadFileUser(String username ,MultipartFile file) throws IOException {
+        String fileName = username + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
         BlobId blobId = BlobId.of(bucketName, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
 
-        storage.create(blobInfo, file.getBytes());
-        return fileName; // Return the name for tracking
+        Blob blob = storage.create(blobInfo, file.getBytes());
+        // Return file path
+        return "https://storage.googleapis.com/" + bucketName + "/" + fileName;
     }
 
     public void deleteFile(String fileName) {
@@ -51,5 +53,14 @@ public class StorageService {
 
         // Write the updated content back to the file
         storage.create(blobInfo, updatedContent.getBytes());
+    }
+    public String uploadFileRest(String restaurantId,MultipartFile file) throws IOException {
+        String fileName = restaurantId + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        BlobId blobId = BlobId.of(bucketNameRest, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+
+        Blob blob = storage.create(blobInfo, file.getBytes());
+        // Return file path
+        return "https://storage.googleapis.com/" + bucketNameRest + "/" + fileName;
     }
 }

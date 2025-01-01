@@ -21,11 +21,22 @@ public class StorageController {
         return "Hello, World!";
     }
 
-    @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadImageToCloudStorage(@RequestPart("image") MultipartFile file) {
+    @PostMapping(value = "user-picture/{username}/upload", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadImageToCloudStorage(@RequestPart("image") MultipartFile file,@PathVariable String username ) {
         try {
-            String fileName = storageService.uploadFile(file);
-            return ResponseEntity.ok("File uploaded successfully: " + fileName);
+            String fileUrl = storageService.uploadFileUser(username,file);
+            return ResponseEntity.ok( fileUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "restaurant-picture/{restaurantId}/upload", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadRestImageToCloudStorage(@RequestPart("image") MultipartFile file,
+                                                                @PathVariable String restaurantId) {
+        try {
+            String fileUrl = storageService.uploadFileRest(restaurantId,file);
+            return ResponseEntity.ok( fileUrl);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
         }
@@ -34,6 +45,12 @@ public class StorageController {
     @DeleteMapping("/delete/{fileName}")
     public ResponseEntity<Void> deleteImageFromCloudStorage(@PathVariable String fileName) {
         storageService.deleteFile(fileName);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/delete/{restaurantId}/{fileName}")
+    public ResponseEntity<Void> deleteRestImageFromCloudStorage(@PathVariable String restaurantId, @PathVariable String fileName) {
+        storageService.deleteFile(restaurantId + "/" + fileName);
         return ResponseEntity.noContent().build();
     }
 
