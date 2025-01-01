@@ -28,15 +28,6 @@ public class StorageService {
         this.storage = StorageOptions.getDefaultInstance().getService();
     }
 
-    public String uploadFileUser(String username ,MultipartFile file) throws IOException {
-        String fileName = username + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-        BlobId blobId = BlobId.of(bucketName, fileName);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
-
-        Blob blob = storage.create(blobInfo, file.getBytes());
-        // Return file path
-        return "https://storage.googleapis.com/" + bucketName + "/" + fileName;
-    }
 
     public void deleteFile(String fileName) {
         BlobId blobId = BlobId.of(bucketName, fileName);
@@ -54,7 +45,7 @@ public class StorageService {
         // Write the updated content back to the file
         storage.create(blobInfo, updatedContent.getBytes());
     }
-    public String uploadFileRest(String restaurantId,MultipartFile file) throws IOException {
+    public String uploadFile(String restaurantId,MultipartFile file) throws IOException {
         String fileName = restaurantId + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
         BlobId blobId = BlobId.of(bucketNameRest, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();

@@ -21,10 +21,10 @@ public class StorageController {
         return "Hello, World!";
     }
 
-    @PostMapping(value = "user-picture/{username}/upload", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadImageToCloudStorage(@RequestPart("image") MultipartFile file,@PathVariable String username ) {
+    @PostMapping(value = "user-picture/{userId}/upload", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadImageToCloudStorage(@RequestPart("image") MultipartFile file,@PathVariable String userId ) {
         try {
-            String fileUrl = storageService.uploadFileUser(username,file);
+            String fileUrl = storageService.uploadFile(userId,file);
             return ResponseEntity.ok( fileUrl);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
@@ -35,7 +35,7 @@ public class StorageController {
     public ResponseEntity<String> uploadRestImageToCloudStorage(@RequestPart("image") MultipartFile file,
                                                                 @PathVariable String restaurantId) {
         try {
-            String fileUrl = storageService.uploadFileRest(restaurantId,file);
+            String fileUrl = storageService.uploadFile(restaurantId,file);
             return ResponseEntity.ok( fileUrl);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
