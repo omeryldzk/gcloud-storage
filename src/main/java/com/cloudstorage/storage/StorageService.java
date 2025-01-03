@@ -1,5 +1,6 @@
 package com.cloudstorage.storage;
 
+import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,11 @@ public class StorageService {
     }
 
 
-    public void deleteFile(String fileName) {
-        BlobId blobId = BlobId.of(bucketName, fileName);
-        storage.delete(blobId);
+    public void deleteAllFilesUnderRestaurant(String restaurantId) {
+        Page<Blob> blobs = storage.list(bucketName, Storage.BlobListOption.prefix(restaurantId + "/"));
+        for (Blob blob : blobs.iterateAll()) {
+            storage.delete(blob.getBlobId());
+        }
     }
 
     public void saveEmailList(String email) {
@@ -53,5 +56,15 @@ public class StorageService {
         Blob blob = storage.create(blobInfo, file.getBytes());
         // Return file path
         return "https://storage.googleapis.com/" + bucketNameRest + "/" + fileName;
+    }
+
+    public String uploadFileUser(String username, MultipartFile file) throws IOException {
+        String fileName = username + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        BlobId blobId = BlobId.of(bucketName, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+
+        Blob blob = storage.create(blobInfo, file.getBytes());
+        // Return file path
+        return "https://storage.googleapis.com/" + bucketName + "/" + fileName;
     }
 }

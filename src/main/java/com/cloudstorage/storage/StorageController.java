@@ -24,7 +24,7 @@ public class StorageController {
     @PostMapping(value = "user-picture/{userId}/upload", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadImageToCloudStorage(@RequestPart("image") MultipartFile file,@PathVariable String userId ) {
         try {
-            String fileUrl = storageService.uploadFile(userId,file);
+            String fileUrl = storageService.uploadFileUser(userId,file);
             return ResponseEntity.ok( fileUrl);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
@@ -42,15 +42,15 @@ public class StorageController {
         }
     }
 
-    @DeleteMapping("/delete/{fileName}")
-    public ResponseEntity<Void> deleteImageFromCloudStorage(@PathVariable String fileName) {
-        storageService.deleteFile(fileName);
+    @DeleteMapping("/delete-user/{username}")
+    public ResponseEntity<Void> deleteImageFromCloudStorage(@PathVariable String username) {
+        storageService.deleteAllFilesUnderRestaurant(username);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/delete/{restaurantId}/{fileName}")
-    public ResponseEntity<Void> deleteRestImageFromCloudStorage(@PathVariable String restaurantId, @PathVariable String fileName) {
-        storageService.deleteFile(restaurantId + "/" + fileName);
+    @DeleteMapping("/delete-rest/{restaurantId}")
+    public ResponseEntity<Void> deleteRestImageFromCloudStorage(@PathVariable String restaurantId) {
+        storageService.deleteAllFilesUnderRestaurant(restaurantId);
         return ResponseEntity.noContent().build();
     }
 
