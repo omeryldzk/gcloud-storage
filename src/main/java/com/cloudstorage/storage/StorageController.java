@@ -42,13 +42,13 @@ public class StorageController {
         }
     }
 
-    @DeleteMapping("/delete-user/{username}")
+    @DeleteMapping("user-picture/{username}/delete")
     public ResponseEntity<Void> deleteImageFromCloudStorage(@PathVariable String username) {
-        storageService.deleteAllFilesUnderRestaurant(username);
+        storageService.deleteAllFilesUnderUser(username);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/delete-rest/{restaurantId}")
+    @DeleteMapping("restaurant-picture/{restaurantId}/delete")
     public ResponseEntity<Void> deleteRestImageFromCloudStorage(@PathVariable String restaurantId) {
         storageService.deleteAllFilesUnderRestaurant(restaurantId);
         return ResponseEntity.noContent().build();

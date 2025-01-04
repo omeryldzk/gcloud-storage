@@ -31,7 +31,14 @@ public class StorageService {
 
 
     public void deleteAllFilesUnderRestaurant(String restaurantId) {
-        Page<Blob> blobs = storage.list(bucketName, Storage.BlobListOption.prefix(restaurantId + "/"));
+        Page<Blob> blobs = storage.list(bucketNameRest, Storage.BlobListOption.prefix(restaurantId + "/"));
+        for (Blob blob : blobs.iterateAll()) {
+            storage.delete(blob.getBlobId());
+        }
+    }
+
+    public void deleteAllFilesUnderUser(String username) {
+        Page<Blob> blobs = storage.list(bucketName, Storage.BlobListOption.prefix(username + "/"));
         for (Blob blob : blobs.iterateAll()) {
             storage.delete(blob.getBlobId());
         }
